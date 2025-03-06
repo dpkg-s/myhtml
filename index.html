@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>某只鸟的博客</title>
+    <title>Optimized Page</title>
     <style>
         * {
             margin: 0;
@@ -46,6 +46,13 @@
         img {
             width: 300px;
             height: auto;
+            transition: transform 0.3s ease;
+            /* 添加过渡效果 */
+        }
+
+        img:hover {
+            transform: scale(1.1);
+            /* 鼠标悬停时放大 1.1 倍 */
         }
 
         a {
@@ -132,31 +139,17 @@
             background-color: transparent;
             border: none;
             cursor: pointer;
-            color: #333;
-        }
-
-        body.dark-mode #mode-toggle {
-            color: #fff;
-        }
-
-        #mode-toggle {
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
             padding: 0;
         }
 
         #mode-toggle-img {
             width: 24px;
-            /* 调整图片宽度 */
             height: 24px;
-            /* 调整图片高度 */
             transition: filter 0.3s ease;
         }
 
         body.dark-mode #mode-toggle-img {
             filter: invert(1);
-            /* 可根据实际情况调整，用于在深色模式下让图片颜色适配 */
         }
     </style>
 </head>
@@ -170,7 +163,7 @@
             <a href="#3">作品</a>
             <a href="#4">日志</a>
             <button id="mode-toggle">
-                <img src="./png/太阳.png" id="mode-toggle-img" alt="模式切换">
+                <img id="mode-toggle-img" src="./png/太阳.png" alt="切换模式">
             </button>
         </div>
     </nav>
@@ -229,43 +222,90 @@
                 <h5>2025-3-6</h5>
                 <small>映射成功</small>
             </div>
+            <div class="scroll-item">
+                <h5>2025-3-6</h5>
+                <small>增加了些动画效果</small>
+            </div>
         </div>
+    </section>
+    <section class="section">
+        <small>做的不好，见谅，第一次，有问题我会慢慢的改</small>
+        <br>
+        <small>关于“人像”如果有侵权请联系我</small>
+        <br>
+        <samp><a href="https://github.com/dpkg-s/myhtml">github</a></samp>
     </section>
 
     <script>
-        function fetchQuote() {
-            fetch('https://international.v1.hitokoto.cn')
-                .then(response => response.json())
-                .then(data => document.getElementById('quote').innerText = data.hitokoto)
-                .catch(() => setTimeout(fetchQuote, 100));
-        }
-
-        window.onload = fetchQuote;
-
-        const modeToggle = document.getElementById('mode-toggle');
-        const body = document.body;
-
-        modeToggle.addEventListener('click', function () {
-    body.classList.toggle('dark-mode');
-    if (body.classList.contains('dark-mode')) {
-        modeToggleImg.src = './img/太阳.png';
-    } else {
-        modeToggleImg.src = './png/月亮.png';
-    }
-});
-
-        let lastScrollTop = 0;
-        window.addEventListener('scroll', function () {
-            const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            const navbar = document.querySelector('.navbar');
-            if (currentScrollTop > lastScrollTop) {
-                // 向下滚动
-                navbar.style.top = '-60px'; // 假设导航栏高度为 60px
-            } else {
-                // 向上滚动
-                navbar.style.top = '0';
+        document.addEventListener('DOMContentLoaded', function () {
+            function fetchQuote() {
+                fetch('https://international.v1.hitokoto.cn')
+                    .then(response => response.json())
+                    .then(data => document.getElementById('quote').innerText = data.hitokoto)
+                    .catch(() => setTimeout(fetchQuote, 100));
             }
-            lastScrollTop = currentScrollTop;
+
+            fetchQuote();
+
+            const modeToggle = document.getElementById('mode-toggle');
+            const modeToggleImg = document.getElementById('mode-toggle-img');
+            const body = document.body;
+
+            modeToggle.addEventListener('click', function () {
+                body.classList.toggle('dark-mode');
+                if (body.classList.contains('dark-mode')) {
+                    modeToggleImg.src = './png/月亮.png';
+                } else {
+                    modeToggleImg.src = './png/太阳.png';
+                }
+            });
+
+            let lastScrollTop = 0;
+            window.addEventListener('scroll', function () {
+                const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const navbar = document.querySelector('.navbar');
+                if (currentScrollTop > lastScrollTop) {
+                    // 向下滚动
+                    navbar.style.top = '-60px'; // 假设导航栏高度为 60px
+                } else {
+                    // 向上滚动
+                    navbar.style.top = '0';
+                }
+                lastScrollTop = currentScrollTop;
+            });
+
+            // 鼠标拖动滚动功能
+            const scrollContainers = document.querySelectorAll('.scroll-container');
+            scrollContainers.forEach(container => {
+                let isDragging = false;
+                let startX;
+                let scrollLeft;
+
+                container.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    container.style.cursor = 'grabbing';
+                    startX = e.pageX - container.offsetLeft;
+                    scrollLeft = container.scrollLeft;
+                });
+
+                container.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const x = e.pageX - container.offsetLeft;
+                    const walk = (x - startX) * 2; // 滚动速度
+                    container.scrollLeft = scrollLeft - walk;
+                });
+
+                container.addEventListener('mouseup', () => {
+                    isDragging = false;
+                    container.style.cursor = 'grab';
+                });
+
+                container.addEventListener('mouseleave', () => {
+                    isDragging = false;
+                    container.style.cursor = 'grab';
+                });
+            });
         });
     </script>
 </body>
